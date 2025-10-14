@@ -1,40 +1,139 @@
 import { Grid3x3, RotateCcw, Users } from 'lucide-react';
 import React, { useState } from 'react'
+import NumberBox from '../components/numberBox';
 
 export const Dashboard = () => {
   const [score, setScore] = useState(276);
   const [bestScore, setBestScore] = useState(276);
-  const [grid, setGrid] = useState([
-    [2, 0, 2, 0],
-    [8, 2, 4, 4],
-    [16, 8, 32, 8],
-    [2, 4, 16, 4]
+  const [grid, setGrid] = useState<number[][]>([
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0],
+    [0, 0, 0, 0]
   ]);
-
-  const getTileColor = (value:number) => {
-    const colors:{[key:number]:string} = {
-      0: 'bg-[#cdc1b4]',
-      2: 'bg-[#eee4da] text-[#776e65]',
-      4: 'bg-[#ede0c8] text-[#776e65]',
-      8: 'bg-[#f2b179] text-white',
-      16: 'bg-[#f59563] text-white',
-      32: 'bg-[#f67c5f] text-white',
-      64: 'bg-[#f65e3b] text-white',
-      128: 'bg-[#edcf72] text-white',
-      256: 'bg-[#edcc61] text-white',
-      512: 'bg-[#edc850] text-white',
-      1024: 'bg-[#edc53f] text-white',
-      2048: 'bg-[#edc22e] text-white'
-    };
-    return colors[value] || 'bg-[#cdc1b4]';
-  };
-
-  const getTileSize = (value:number) => {
-    if (value >= 1024) return 'text-3xl';
-    if (value >= 128) return 'text-4xl';
-    return 'text-5xl';
-  };
-
+  const checkIfSpaceLeft=(grid:number[][]):boolean=>{
+    for(let i=0;i<4;i++){
+      for(let j=0;j<4;j++){
+        if(grid[i][j]===0){
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+  const getRandom=():number[]=>{
+    let randRow=Math.floor(Math.random()*4);
+    let randCol=Math.floor(Math.random()*4);
+    return [randRow,randCol];
+  }
+  const getRandomEntryPosition=(grid:number[][]):number[][]=>{
+    if(!checkIfSpaceLeft(grid)){
+      return grid;
+    }
+    let [row,col]=getRandom();
+    while(grid[row][col]!==0){
+      [row,col]=getRandom();
+    }
+    grid[row][col]=2;
+    return grid;
+  }
+  const gridAfterPerformingAdditionForSameAdjTiles=(grid:number[][]):number[][]=>{
+    for(let i=0;i<4;i++){
+      for(let j=0;j<3;j++){
+        if(grid[i][j]!==0 && grid[i][j]==grid[i][j+1]){
+          grid[i][j]=grid[i][j]*2;
+          grid[i][j+1]=0;
+        }
+      }
+    }
+    return grid;
+  }
+  const slideLeft = (grid: number[][]): number[][] => {
+    let newGrid:number[][]=Array.from({length:4},()=>Array(4).fill(0));
+    for(let i=0;i<4;i++){
+      let trackEmptyColIdx=0;
+      for(let j=0;j<4;j++){
+        if(grid[i][j]!==0){
+          newGrid[i][trackEmptyColIdx]=grid[i][j];
+          trackEmptyColIdx++;
+        }
+      }
+    }
+    return newGrid; 
+  } 
+  const slideRight = (grid: number[][]): number[][] => {
+    let newGrid:number[][]=Array.from({length:4},()=>Array(4).fill(0));
+    for(let i=0;i<4;i++){
+      for(let j=0;j<4;j++){
+        newGrid[i][j]=grid[i][3-i];
+      }
+    }
+    return newGrid;
+  }
+  const slideUp=(grid:number[][]):number[][] =>{
+     let newGrid:number[][]=Array.from({length:4},()=>Array(4).fill(0));
+     for(let i=0;i<4;i++){
+      for(let j=0;j<4;j++){
+        newGrid[i][j]=grid[j][3-i];
+        }
+      }
+     return newGrid;
+  }
+  const slideDown=(grid:number[][]):number[][]=>{
+     let newGrid:number[][]=Array.from({length:4},()=>Array(4).fill(0));
+     for(let i=0;i<4;i++){
+      for(let j=0;j<4;j++){
+        newGrid[i][j]=grid[3-j][i];
+        }
+      }
+     return newGrid;
+  }
+  const shiftLeft = (grid: number[][]): number[][] => {
+    let gridAfterShiftingAllLeft = slideLeft(grid);
+    let gridiAfterPerformingAddition = gridAfterPerformingAdditionForSameAdjTiles(gridAfterShiftingAllLeft);
+    return slideLeft(gridiAfterPerformingAddition);
+  }
+  const shiftRight = (grid: number[][]): number[][] => {
+    let gridAfterShiftingAllRight = slideRight(grid);
+    let gridAfterPerformingRightSlide = shiftLeft(gridAfterShiftingAllRight);
+    return slideRight(gridAfterPerformingRightSlide);
+  }
+  const shiftUp = (grid: number[][]): number[][] => {
+     let gridAfterShiftingAllUp = slideUp(grid);
+    let gridAfterPerformingUpSlide = shiftLeft(gridAfterShiftingAllUp);
+    return slideUp(gridAfterPerformingUpSlide);
+  }
+  const shiftDown = (grid: number[][]): number[][] => {
+     let gridAfterShiftingAllRight = slideDown(grid);
+    let gridAfterPerformingDownSlide = shiftLeft(gridAfterShiftingAllRight);
+    return slideDown(gridAfterPerformingDownSlide);
+  }
+  const isSameGrid=(oldGrid:number[][],updatedGridAfterMove:number[][])=>{
+    for(let i=0;i<4;i++){
+      for( let j=0;j<4;j++){
+        if(oldGrid[i][j]!==updatedGridAfterMove[i][j]){
+          return false;
+        }
+      }
+    }
+    return true;
+  }
+  const checkIsGameOverWithNoMovesLeft=()=>{
+    if(isSameGrid(grid,shiftLeft(grid)) && isSameGrid(grid,shiftRight(grid)) && isSameGrid(grid,shiftUp(grid)) && isSameGrid(grid,shiftDown(grid))){
+      return true;
+    }
+    return false;
+  }
+  const isFinalValueFound=():boolean=>{
+    for(let i=0;i<4;i++){
+      for(let j=0;j<4;j++){
+        if(grid[i][j]==2048){
+          return true;
+        }
+      }
+    }
+    return false;
+  }
   return (
     <div className="min-h-screen bg-[#faf8ef] flex items-center justify-center p-4">
       <div className="w-full max-w-xl">
@@ -61,7 +160,6 @@ export const Dashboard = () => {
           </div>
         </div>
 
-        {/* New Game Button */}
         <div className="flex justify-end mb-6">
           <button className="bg-[#8f7a66] hover:bg-[#9f8a76] text-white font-bold py-2 px-6 rounded">
             New Game
@@ -70,17 +168,12 @@ export const Dashboard = () => {
 
         {/* Game Grid */}
         <div className="bg-[#bbada0] rounded-lg p-4 mb-6">
-          <div className="grid grid-cols-4 gap-4">
-            {grid.map((row, rowIndex) => (
-              row.map((cell, colIndex) => (
-                <div
-                  key={`${rowIndex}-${colIndex}`}
-                  className={`${getTileColor(cell)} rounded aspect-square flex items-center justify-center font-bold transition-all duration-100 ${getTileSize(cell)}`}
-                >
-                  {cell !== 0 && cell}
-                </div>
-              ))
-            ))}
+           <div className="grid grid-cols-4 gap-4">
+          {grid.map((row, rowIndex) =>
+            row.map((col, colIndex) => (
+              <NumberBox  rowIndex={rowIndex} col={col} colIndex={colIndex} />
+            ))
+          )}
           </div>
         </div>
 
