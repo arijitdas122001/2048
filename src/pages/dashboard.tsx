@@ -15,7 +15,6 @@ export const Dashboard = () => {
   const [score, setScore] = useState(0);
   const [row, setRow] = useState<number>(4);
   const [col, setCol] = useState<number>(4);
-  const [bestScore, setBestScore] = useState(0);
   const getEmptyGrid = (currRow: number, currCol: number) => {
     // console.log(`row ${currRow} col ${currCol}`)
     return Array.from({ length: currRow }, () =>
@@ -27,11 +26,12 @@ export const Dashboard = () => {
   );
   const checkGameEndingStatus = (currGrid: number[][]) => {
     if (isFinalValueFound(currGrid)) {
-      console.log("Game over, win");
+      // console.log("Game over, win");
       toast.success("Congratulations! You've reached 2048!");
-    } else if (checkIsGameOverWithNoMovesLeft(currGrid)) {
+      setGrid(getRandomEntryPosition(getEmptyGrid(row, col), true));
+    } else if (checkIsGameOverWithNoMovesLeft(currGrid)) {  
       // console.log("Game over, no moves left");
-      toast.error("Game Over! No moves left.");
+      toast.error("Game Over! No moves left. Please start a new game.");
     }
   };
   const startNewGame = (): any => {
@@ -68,7 +68,6 @@ export const Dashboard = () => {
       }
     }
     setScore(currScore);
-    setBestScore(Math.max(bestScore, currScore));
   };
   const onKeyEvent = (e: KeyboardEvent) => {
     switch (e.key) {
@@ -119,27 +118,20 @@ export const Dashboard = () => {
     };
   });
   return (
-    <div className="min-h-screen bg-[#faf8ef] flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#F1F1F1] flex items-center justify-center p-4">
       <div className="w-full max-w-xl">
-        {/* Header */}
         <div className="flex items-center gap-10 mb-6">
           <div className="flex gap-3">
-            <div className="bg-[#bbada0] rounded px-6 py-2 text-center min-w-[80px]">
+            <div className="bg-[#B6AE9F] rounded px-6 py-2 text-center min-w-[80px]">
               <div className="text-[#eee4da] text-xs font-bold uppercase">
                 Score
               </div>
               <div className="text-white text-2xl font-bold">{score}</div>
             </div>
-            <div className="bg-[#bbada0] rounded px-6 py-2 text-center min-w-[80px]">
-              <div className="text-[#eee4da] text-xs font-bold uppercase">
-                Best
-              </div>
-              <div className="text-white text-2xl font-bold">{bestScore}</div>
-            </div>
           </div>
           <div>
             <div className="flex gap-3">
-              <div className="bg-[#bbada0] rounded px-6 py-2 text-center min-w-[100px]">
+              <div className="bg-[#B6AE9F] rounded px-6 py-2 text-center min-w-[100px]">
                 <div className="text-[#eee4da] text-xs font-bold uppercase">
                   row
                 </div>
@@ -152,7 +144,7 @@ export const Dashboard = () => {
                   placeholder={row.toString()}
                 />
               </div>
-              <div className="bg-[#bbada0] rounded px-6 py-2 text-center min-w-[100px]">
+              <div className="bg-[#B6AE9F] rounded px-6 py-2 text-center min-w-[100px]">
                 <div className="text-[#eee4da] text-xs font-bold uppercase">
                   column
                 </div>
@@ -166,7 +158,7 @@ export const Dashboard = () => {
                 />
               </div>
               <button
-                className="h-15 w-32 border-0 rounded bg-[#bbada0] cursor-pointer text-white"
+                className="h-15 w-32 border-0 rounded bg-[#F84464] cursor-pointer text-white"
                 onClick={() => startGameWithNewSize(row, col)}
               >
                 Set Grid Size
@@ -185,7 +177,7 @@ export const Dashboard = () => {
         </div>
 
         {/* Game Grid */}
-        <div className="bg-[#bbada0] rounded-lg p-4 mb-6">
+        <div className="bg-[#1a1613] rounded-lg p-4 mb-6">
           <div
             className="grid gap-4"
             style={{

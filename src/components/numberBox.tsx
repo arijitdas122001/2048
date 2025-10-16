@@ -5,7 +5,7 @@ const NumberBox = (props: any) => {
   const getTileColor = (value: number) => {
     // console.log(`row ${row} col ${col}`)
     const colors: { [key: number]: string } = {
-      0: "bg-[#cdc1b4]",
+      0: "bg-[#B77466]",
       2: "bg-[#eee4da] text-[#776e65]",
       4: "bg-[#ede0c8] text-[#776e65]",
       8: "bg-[#f2b179] text-white",
