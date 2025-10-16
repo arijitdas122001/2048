@@ -1,8 +1,9 @@
 import React from "react";
 
 const NumberBox = (props: any) => {
-  const { rowIndex, col, colIndex } = props;
+  const { rowIndex,row, col, colIndex } = props;
   const getTileColor = (value: number) => {
+    // console.log(`row ${row} col ${col}`)
     const colors: { [key: number]: string } = {
       0: "bg-[#cdc1b4]",
       2: "bg-[#eee4da] text-[#776e65]",
