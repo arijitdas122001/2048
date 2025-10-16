@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import NumberBox from "../components/numberBox";
 import {
   checkIsGameOverWithNoMovesLeft,
@@ -190,7 +190,6 @@ export const Dashboard = () => {
                 <div key={`${rowIndex}-${colIndex}`}>
                   <NumberBox
                     rowIndex={rowIndex}
-                    row={row}
                     col={col}
                     colIndex={colIndex}
                   />
