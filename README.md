@@ -1,5 +1,5 @@
 # 2048 game made with react+vite-engine
-**Url :** 
+**Url :**  https://my2048game.vercel.app/
 ## what is 2048 game
   The 2048 game is a simple yet addictive single-player puzzle game that has taken the internet by storm. It's a great way to challenge yourself mentally and improve your strategic thinking
 
